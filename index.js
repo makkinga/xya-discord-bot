@@ -75,14 +75,12 @@ bot.on('message', message => {
             if (getUserBalance() >= amount) {
                 makeTransaction('from', 'to'); // TODO: replace with user address
 
-                message.react('✅');
+                reactSuccess();
             } else {
-                message.react('❌');
-                message.reply(`Insufficient funds!`);
+                reactError(`Insufficient funds!`);
             }
         } else {
-            message.react('❌');
-            message.reply('Please tag a valid user!');
+            reactError(`Please tag a valid user!`)
         }
     }
 
@@ -99,18 +97,17 @@ bot.on('message', message => {
 
             if (getUserBalance() >= amount) {
                 amount = amount / Object.keys(taggedUsers).length;
+
                 taggedUsers.forEach(function (user) {
                     makeTransaction('from', 'to'); // TODO: replace with user address
                 });
 
-                message.react('✅');
+                reactSuccess();
             } else {
-                message.react('❌');
-                message.reply(`Insufficient funds!`);
+                reactError(`Insufficient funds!`);
             }
         } else {
-            message.react('❌');
-            message.reply('Please tag a valid user!');
+            reactError(`Please tag a valid user!`)
         }
     }
 
@@ -197,27 +194,52 @@ bot.on('message', message => {
     if (message.content === prefix + 'sendmax') {
         message.author.send('TODO');
     }
+
+    /**
+     * React success
+     *
+     * @param reply
+     */
+    function reactSuccess(reply = null) {
+        message.react('✅');
+
+        if (reply !== null) {
+            message.reply(reply);
+        }
+    }
+
+    /**
+     * React error
+     *
+     * @param reply
+     */
+    function reactError(reply = null) {
+        message.react('❌');
+
+        if (reply !== null) {
+            message.reply(reply);
+        }
+    }
+
+    /**
+     * Get user balance
+     *
+     * @return float
+     */
+    function getUserBalance() {
+        // TODO @tailchakra: get user balance
+        return 1000.00;
+    }
+
+    /**
+     * Make transaction
+     *
+     * @param from
+     * @param to
+     *
+     * @return void
+     */
+    function makeTransaction(from, to) {
+        // TODO @tailchakra: make transaction
+    }
 });
-
-
-/**
- * Get user balance
- *
- * @return float
- */
-function getUserBalance() {
-    // TODO @tailchakra: get user balance
-    return 1000.00;
-}
-
-/**
- * Make transaction
- *
- * @param from
- * @param to
- *
- * @return void
- */
-function makeTransaction(from, to) {
-    // TODO @tailchakra: make transaction
-}
