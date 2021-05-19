@@ -9,11 +9,12 @@
 
 ## Installation
 
-1. Clone repo
-2. Run `npm install`
-3. Copy `.env.example` to `.env`
-4. Add Discord credentials to `.env`
-5. Run `node index.js`
+1. [Create a bot](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)
+2. Clone repo
+3. Run `npm install`
+4. Copy `.env.example` to `.env`
+5. Add Discord credentials to `.env`
+6. Run `node index.js`
 
 ## License
 
