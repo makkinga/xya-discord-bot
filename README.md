@@ -1,5 +1,7 @@
 # Freyala (XYA) Discord Bot
 
+![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/makkinga/xya-discord-bot.svg?label=version) [![StyleCI Status](https://github.styleci.io/repos/157406962/shield?style=flat&branch=master)](https://github.styleci.io/repos/368896444) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Requirements
 
 - [Node.js](http://nodejs.org/)
