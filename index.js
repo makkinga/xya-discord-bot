@@ -1,4 +1,5 @@
 require('dotenv').config();
+const moment  = require('moment');
 const Discord = require('discord.js');
 const bot     = new Discord.Client();
 const token   = process.env.TOKEN;
@@ -14,6 +15,12 @@ bot.on('message', message => {
     const prefix         = '!';
     const publicPrefix   = '!f';
     const currencySymbol = 'XYA';
+
+
+    if (message.content === prefix + 'test') {
+        //
+    }
+
 
     /**
      * @name Help
@@ -67,13 +74,13 @@ bot.on('message', message => {
      * @example !ftip 100 @user1
      * @description Send a tip to mentioned users
      */
-    if (message.content.startsWith(publicPrefix + 'tip')) {
+    if (message.content.startsWith(publicPrefix + 'tip ')) {
         if (message.mentions.users.size) {
-            const taggedUser = message.mentions.users.first();
-            const amount     = message.content.match(/tip\s(?<amount>[0-9]+)\s<@/).groups.amount;
+            const receiver = message.mentions.users.first();
+            const amount   = message.content.match(/tip\s(?<amount>[0-9]+)\s<@/).groups.amount;
 
-            if (getUserBalance() >= amount) {
-                makeTransaction('from', 'to'); // TODO: replace with user address
+            if (getUserBalance(message.author.id) >= amount) {
+                makeTransaction(getUserAddress(message.author.id), getUserAddress(receiver.id), amount);
 
                 reactSuccess();
             } else {
@@ -90,16 +97,16 @@ bot.on('message', message => {
      * @example !ftipsplit 100 @user1 @user2
      * @description Split a tip among mentioned users
      */
-    if (message.content.startsWith(publicPrefix + 'tipsplit')) {
+    if (message.content.startsWith(publicPrefix + 'tipsplit ')) {
         if (message.mentions.users.size) {
-            const taggedUsers = message.mentions.users;
-            let amount        = message.content.match(/tip\s(?<amount>[0-9]+)\s<@/).groups.amount;
+            const receivers = message.mentions.users;
+            let amount      = message.content.match(/tipsplit\s(?<amount>[0-9]+)\s<@/).groups.amount;
 
-            if (getUserBalance() >= amount) {
-                amount = amount / Object.keys(taggedUsers).length;
+            if (getUserBalance(message.author.id) >= amount) {
+                amount = (amount / receivers.size);
 
-                taggedUsers.forEach(function (user) {
-                    makeTransaction('from', 'to'); // TODO: replace with user address
+                receivers.forEach(function (receiver) {
+                    makeTransaction(getUserAddress(message.author.id), getUserAddress(receiver.id), amount);
                 });
 
                 reactSuccess();
@@ -117,8 +124,37 @@ bot.on('message', message => {
      * @example !ftiprandom 100
      * @description Tip an active user at random. (past x minutes activity)
      */
-    if (message.content.startsWith(publicPrefix + 'tiprandom')) {
-        message.channel.send('TODO');
+    if (message.content.startsWith(publicPrefix + 'tiprandom ')) {
+        const amount = message.content.match(/tiprandom\s(?<amount>[0-9]+)/).groups.amount;
+        const time   = moment().subtract(15, 'minutes').valueOf();
+
+        message.channel.fetchMessages({after: time}).then(function (lastMessages) {
+            let receivers = [];
+            lastMessages.forEach(function (lastMessage) {
+                let add = true;
+
+                if (lastMessage.author.id === message.author.id) {
+                    add = false;
+                }
+
+                if (!userHasWallet(lastMessage.author.id)) {
+                    add = false;
+                }
+
+                if (lastMessage.author.bot) {
+                    add = false;
+                }
+
+                if (add) {
+                    receivers.push(lastMessage.author);
+                }
+            });
+
+            const receiver = receivers[Math.floor(Math.random() * receivers.length)];
+            makeTransaction(getUserAddress(message.author.id), getUserAddress(receiver.id), amount);
+
+            receiver.send(`@${message.author.username} sent you ${amount} XYA. Spend it wisely`);
+        });
     }
 
     /**
@@ -128,7 +164,40 @@ bot.on('message', message => {
      * @description Distribute a tip amount amongst active users (past x minutes activity)
      */
     if (message.content.startsWith(publicPrefix + 'rain')) {
-        message.channel.send('TODO');
+        const time   = moment().subtract(15, 'minutes').valueOf();
+        const amount = message.content.match(/rain\s(?<amount>[0-9]+)/).groups.amount;
+
+        message.channel.fetchMessages({after: time}).then(function (lastMessages) {
+            let receivers = [];
+            lastMessages.forEach(function (lastMessage) {
+                let add = true;
+
+                if (lastMessage.author.id === message.author.id) {
+                    add = false;
+                }
+
+                if (!userHasWallet(lastMessage.author.id)) {
+                    add = false;
+                }
+
+                if (lastMessage.author.bot) {
+                    add = false;
+                }
+
+                if (add) {
+                    receivers.push(lastMessage.author);
+                }
+            });
+
+            receivers    = receivers.filter((v, i, a) => a.indexOf(v) === i);
+            const amount = (amount / receivers.length);
+
+            receivers.forEach(function (receiver) {
+                makeTransaction(getUserAddress(message.author.id), getUserAddress(receiver.id), amount);
+
+                receiver.send(`@${message.author.username} sent you ${amount} XYA. Spend it wisely`);
+            });
+        });
     }
 
     /**
@@ -217,8 +286,28 @@ bot.on('message', message => {
         message.react('❌');
 
         if (reply !== null) {
-            message.reply(reply);
+            message.author.send(reply);
         }
+    }
+
+    /**
+     * Get user address
+     *
+     * @param id
+     */
+    function getUserAddress(id) {
+        // TODO: get user address
+        return '0xo2i3j43ljk4652l43kj2342dfsd8fsasdf7asdf0asd';
+    }
+
+    /**
+     * Check if user has wallet
+     *
+     * @param id
+     */
+    function userHasWallet(id) {
+        // TODO: check if user has a wallet
+        return true;
     }
 
     /**
@@ -226,7 +315,7 @@ bot.on('message', message => {
      *
      * @return float
      */
-    function getUserBalance() {
+    function getUserBalance(id) {
         // TODO @tailchakra: get user balance
         return 1000.00;
     }
@@ -236,10 +325,10 @@ bot.on('message', message => {
      *
      * @param from
      * @param to
-     *
+     * @param amount
      * @return void
      */
-    function makeTransaction(from, to) {
+    function makeTransaction(from, to, amount) {
         // TODO @tailchakra: make transaction
     }
 });
