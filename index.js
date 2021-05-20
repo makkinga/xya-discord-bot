@@ -1,12 +1,42 @@
 require('dotenv').config();
-const moment  = require('moment');
-const Discord = require('discord.js');
-const bot     = new Discord.Client();
-const token   = process.env.TOKEN;
+const moment    = require('moment');
+const Discord   = require('discord.js');
+const Sequelize = require('sequelize');
+const bot       = new Discord.Client();
+const token     = process.env.TOKEN;
+
+/* DB Connection information */
+const sequelize = new Sequelize('database', 'user', 'password', {
+    host   : process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    storage: process.env.DB_STORAGE,
+    logging: false,
+});
+
+/* Creating the model */
+const Wallets = sequelize.define('wallets', {
+    user   : {
+        type     : Sequelize.STRING,
+        unique   : true,
+        allowNull: false,
+    },
+    address: {
+        type     : Sequelize.STRING,
+        unique   : true,
+        allowNull: false,
+    },
+    seed   : {
+        type     : Sequelize.STRING,
+        allowNull: false,
+    },
+});
 
 /* Bot login */
 bot.login(token);
+
+/* Bot ready */
 bot.on('ready', () => {
+    Wallets.sync();
     console.info(`Logged in as ${bot.user.tag}!`);
 });
 
@@ -16,11 +46,9 @@ bot.on('message', message => {
     const publicPrefix   = '!f';
     const currencySymbol = 'XYA';
 
-
     if (message.content === prefix + 'test') {
         //
     }
-
 
     /**
      * @name Help
@@ -221,7 +249,16 @@ bot.on('message', message => {
      * @description Shows your account address
      */
     if (message.content === prefix + 'deposit') {
-        message.author.send('TODO');
+        getWallet(message.author.id).then(function (wallet) {
+            if (wallet !== null) {
+                message.author.send(`Your wallet address is "${wallet.address}". \n\nPlease do not use this as your main wallet, only for tipping on Discord. \nDo not send large amounts of XYA to this wallet.`)
+            } else {
+                createWallet(message.author.id).then(function (newWallet) {
+                    message.author.send('You do not yet have a tipping wallet. Let me create one real quick!')
+                    message.author.send(`Done! Your new wallet address is "${newWallet.address}". \n\nPlease do not use this as your main wallet, only for tipping on Discord. \nDo not send large amounts of XYA to this wallet.`)
+                });
+            }
+        });
     }
 
     /**
@@ -265,11 +302,36 @@ bot.on('message', message => {
     }
 
     /**
+     * Create wallet
+     *
+     * @param id
+     */
+    function createWallet(id)
+    {
+        return Wallets.create({
+            user   : id,
+            address: '0xo2i3j43ljk4652l43kj2342dfsd8fsasdf7asdf0asd', // TODO: generate wallet address
+            seed   : 'Flip flap flupperdupperdob Flupperdupperblib og flop', // TODO: generate seed
+        });
+    }
+
+    /**
+     * Check for wallet
+     *
+     * @param id
+     */
+    function getWallet(id)
+    {
+        return Wallets.findOne({where: {user: id}});
+    }
+
+    /**
      * React success
      *
      * @param reply
      */
-    function reactSuccess(reply = null) {
+    function reactSuccess(reply = null)
+    {
         message.react('✅');
 
         if (reply !== null) {
@@ -282,7 +344,8 @@ bot.on('message', message => {
      *
      * @param reply
      */
-    function reactError(reply = null) {
+    function reactError(reply = null)
+    {
         message.react('❌');
 
         if (reply !== null) {
@@ -295,7 +358,8 @@ bot.on('message', message => {
      *
      * @param id
      */
-    function getUserAddress(id) {
+    function getUserAddress(id)
+    {
         // TODO: get user address
         return '0xo2i3j43ljk4652l43kj2342dfsd8fsasdf7asdf0asd';
     }
@@ -305,7 +369,8 @@ bot.on('message', message => {
      *
      * @param id
      */
-    function userHasWallet(id) {
+    function userHasWallet(id)
+    {
         // TODO: check if user has a wallet
         return true;
     }
@@ -315,7 +380,8 @@ bot.on('message', message => {
      *
      * @return float
      */
-    function getUserBalance(id) {
+    function getUserBalance(id)
+    {
         // TODO @tailchakra: get user balance
         return 1000.00;
     }
@@ -328,7 +394,8 @@ bot.on('message', message => {
      * @param amount
      * @return void
      */
-    function makeTransaction(from, to, amount) {
+    function makeTransaction(from, to, amount)
+    {
         // TODO @tailchakra: make transaction
     }
 });
