@@ -14,7 +14,8 @@
 3. Run `npm install`
 4. Copy `.env.example` to `.env`
 5. Add Discord credentials to `.env`
-6. Run `node index.js`
+6. Add Database credentials to `.env`
+7. Run `node index.js`
 
 ## License
 
