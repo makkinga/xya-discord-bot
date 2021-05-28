@@ -42,9 +42,9 @@ bot.on('ready', () => {
 
 /* Message event */
 bot.on('message', message => {
-    const prefix         = '!';
-    const publicPrefix   = '!f';
-    const currencySymbol = 'XYA';
+    const prefix         = process.env.MESSAGE_PREFIX;
+    const publicPrefix   = process.env.MESSAGE_PUBLIC_PREFIX;
+    const currencySymbol = process.env.CURRENCY_SYMBOL;
 
     if (message.content === prefix + 'test') {
         //
@@ -268,7 +268,9 @@ bot.on('message', message => {
      * @description Shows your account XYA balance
      */
     if (message.content === prefix + 'balance') {
-        message.author.send('TODO');
+        // check if user has a wallet
+        // if not ask them to run the deposit command
+        // if they do return the wallet's balance
     }
 
     /**
@@ -278,7 +280,9 @@ bot.on('message', message => {
      * @description Shows your account ONE balance
      */
     if (message.content === prefix + 'gasbalance') {
-        message.author.send('TODO');
+        // check if user has a wallet
+        // if not ask them to run the deposit command
+        // if they do return the wallet's gas balance
     }
 
     /**
@@ -288,7 +292,10 @@ bot.on('message', message => {
      * @description Send Nano to an external address
      */
     if (message.content === prefix + 'send') {
-        message.author.send('TODO');
+        // check if user has a wallet
+        // if not ask them to run the deposit command
+        // get amount and address from message
+        // make transaction of amount to address
     }
 
     /**
@@ -298,7 +305,10 @@ bot.on('message', message => {
      * @description Send all of your Nano to an external address
      */
     if (message.content === prefix + 'sendmax') {
-        message.author.send('TODO');
+        // check if user has a wallet
+        // if not ask them to run the deposit command
+        // get address from message
+        // make transaction of max amount to address
     }
 
     /**
@@ -310,8 +320,8 @@ bot.on('message', message => {
     {
         return Wallets.create({
             user   : id,
-            address: '0xo2i3j43ljk4652l43kj2342dfsd8fsasdf7asdf0asd', // TODO: generate wallet address
-            seed   : 'Flip flap flupperdupperdob Flupperdupperblib og flop', // TODO: generate seed
+            address: '0xo2i3j43ljk4652l43kj2342dfsd8fsasdf7asdf0asd', // TODO: @tailchakra generate address. @gydo encrypt address
+            seed   : 'Flip flap flupperdupperdob Flupperdupperblib og flop', // TODO: @tailchakra generate seed. @gydo encrypt seed
         });
     }
 

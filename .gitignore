@@ -63,3 +63,4 @@ typings/
 # Misc
 .idea
 package-lock.json
+*.sqlite
