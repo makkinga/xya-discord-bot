@@ -1,18 +1,26 @@
 {
-  "name": "xya-discord-bot",
-  "version": "1.0.0",
-  "description": "Discord bot for Freyala",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Gydo Makkinga",
-  "license": "MIT",
-  "dependencies": {
-    "discord.js": "^11.5.1",
-    "dotenv": "^8.2.0",
-    "moment": "^2.29.1",
-    "sequelize": "^6.6.2",
-    "sqlite3": "^5.0.2"
-  }
+    "name": "xya-discord-bot",
+    "version": "1.0.0",
+    "description": "Discord bot for Freyala",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Gydo Makkinga",
+    "license": "MIT",
+    "dependencies": {
+        "@harmony-js/account": "^0.1.57",
+        "@harmony-js/core": "^0.1.57",
+        "@harmony-js/crypto": "^0.1.56",
+        "@harmony-js/network": "^0.1.56",
+        "@harmony-js/utils": "^0.1.56",
+        "bignumber.js": "^9.0.1",
+        "crypto-js": "^4.0.0",
+        "discord.js": "^11.5.1",
+        "dotenv": "^8.2.0",
+        "moment": "^2.29.1",
+        "sequelize": "^6.6.2",
+        "sqlite3": "^5.0.2",
+        "tslib": "^2.2.0"
+    }
 }
